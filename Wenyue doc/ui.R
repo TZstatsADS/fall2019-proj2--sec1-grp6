@@ -20,8 +20,6 @@ data_raw %<>% filter(`BORO` != '0')
 
 
 
-
-
 #########################################################
 
 #All listed cuisines
@@ -32,23 +30,27 @@ allCuisines <- allCuisines[allCuisines != "Not Listed/Not Applicable"]
 allBoros <- unique(data_raw$BORO)
 
 
-
-
-
-# Define UI for application that draws a histogram
+#Main UI
 shinyUI(
   fluidPage(theme = shinytheme("darkly"),
   
   navbarPage(title = p(class="h","Tasty & Safety"),
              
              ###OVerview tab
-             tabPanel("Overview",
+             tabPanel("Compare",
                     fluidRow(
                       
                       ##side bar controls
                       column(2,
-                             selectInput("cuisine1","Cuisine Type:" ,c('All',allCuisines),multiple = TRUE,selected = 'All'),
-                             selectInput("boro1","Borough:" ,c('All',allBoros),multiple = TRUE,selected = 'All'),
+                             selectInput("cuisine1","Cuisine Type 1" ,c('All',allCuisines),multiple = TRUE,selected = 'All'),
+                             selectInput("boro1","Borough 1" ,c('All',allBoros),multiple = TRUE,selected = 'All'),
+                             br(),
+                             selectInput("cuisine2","Cuisine Type 2" ,c('All',allCuisines),multiple = TRUE,selected = 'All'),
+                             selectInput("boro2","Borough 2" ,c('All',allBoros),multiple = TRUE,selected = 'All'),
+                             br(),
+                             br(),
+                             br(),
+                             br(),
                              sliderInput("slider1", label='Display Number '
                                          ,min=5,max=20,value=10),
                              
@@ -63,12 +65,17 @@ shinyUI(
                              tabsetPanel(
                                ##table and barchart
                                tabPanel("Top Violations", 
-                                        dataTableOutput("top_vio_table")
-                                        ,plotlyOutput("top_vio_bar",height = "auto",width = "auto")
+                                        dataTableOutput("top_vio_table1")
+                                        # ,plotlyOutput("top_vio_bar1",height = "auto",width = "auto")
+                                        ,dataTableOutput("top_vio_table2")
                                )
                                ##Inpsection score distribution
-                               ,tabPanel("Inspection Score" 
-
+                               ,tabPanel("Inspection Score" ,
+                                         plotOutput("score_hist",height = '1000px')
+                               ),tabPanel("Inspection Grade" ,
+                                          br(),
+                                          br(),
+                                          plotlyOutput("grade_pie",height = '1000px')
                                )
                              )
                       )
