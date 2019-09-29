@@ -6,6 +6,7 @@ library(tidyverse)
 library(plotly)
 library(formattable)
 library(RColorBrewer)
+library(leaflet)
 
 
 
@@ -220,6 +221,16 @@ shinyServer(function(input, output) {
 
     
     
+    
+  })
+  
+  
+  output$nycmap <- renderLeaflet({
+    
+    m <- leaflet() %>% 
+      setView(lng = -73.98, lat = 40.75, zoom = 10)%>%
+      addProviderTiles(providers$CartoDB.Positron)
+    return(m)
     
   })
   

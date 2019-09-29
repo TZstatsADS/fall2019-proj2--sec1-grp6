@@ -7,6 +7,7 @@ library(data.table)
 library(magrittr)
 library(tidyverse)
 library(plotly)
+library(leaflet)
 
 
 ##load data
@@ -83,7 +84,37 @@ shinyUI(
              ),
              
              ##Map Tab
-             tabPanel("Map"
+             tabPanel("Map",
+                      fluidRow(
+                        
+                        ##side bar controls
+                        column(2,
+                               selectInput("cuisinemap","Cuisine Type 1" ,c('All',allCuisines),multiple = TRUE,selected = 'All'),
+                               selectInput("boromap","Borough 1" ,c('All',allBoros),multiple = TRUE,selected = 'All'),
+                               br(),
+                               selectInput("cuisinemap","Cuisine Type 2" ,c('All',allCuisines),multiple = TRUE,selected = 'All'),
+                               selectInput("boromap","Borough 2" ,c('All',allBoros),multiple = TRUE,selected = 'All'),
+                               br(),
+                               br(),
+                               br(),
+                               br(),
+                              
+                               
+                               # textInput('zip_input', "Zip:", value='10027'),
+                               checkboxGroupInput("critFlagmap", "Severity",
+                                                  c("Critical" = 'Y',
+                                                    "Non-Critical" = 'N'),selected = c('Y','N'))
+                        ),
+                        
+                        ##Tabset
+                        column(10,
+                               leafletOutput("nycmap", height = '450px'),
+                               
+                               sliderInput("slidermap", label='Display Number '
+                                           ,min=5,max=20,value=10
+                                           , width = 'auto')
+                        )
+                    )
              ),
              
              ##Individual Restaurant Info
