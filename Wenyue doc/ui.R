@@ -107,8 +107,9 @@ shinyUI(
                         ),
                         
                         ##Tabset
-                        column(10,
-                               leafletOutput("nycmap", height = '450px'),
+                        column(10, 
+                               ##Output map with slider underneath with the width of this second column
+                               leafletOutput("nycmap3", height = '450px'),
                                
                                sliderInput("slidermap", label='Display Number '
                                            ,min=5,max=20,value=10
