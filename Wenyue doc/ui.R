@@ -89,33 +89,32 @@ shinyUI(
                         
                         ##side bar controls
                         column(2,
-                               selectInput("cuisinemap","Cuisine Type 1" ,c('All',allCuisines),multiple = TRUE,selected = 'All'),
-                               selectInput("boromap","Borough 1" ,c('All',allBoros),multiple = TRUE,selected = 'All'),
+                               selectInput("boromap","Borough map" ,c('All',allBoros) ,selected = 'All'),
                                br(),
-                               selectInput("cuisinemap","Cuisine Type 2" ,c('All',allCuisines),multiple = TRUE,selected = 'All'),
-                               selectInput("boromap","Borough 2" ,c('All',allBoros),multiple = TRUE,selected = 'All'),
-                               br(),
-                               br(),
+                               radioButtons("Radio_button_name", label = "Violations",
+                                            choices = list("Lowest Violations" = "LV", "Highest Violations" = "HV"),
+                                            selected = "HV"),
                                br(),
                                br(),
-                              
+                               br(),
+                               br()
                                
-                               # textInput('zip_input', "Zip:", value='10027'),
-                               checkboxGroupInput("critFlagmap", "Severity",
-                                                  c("Critical" = 'Y',
-                                                    "Non-Critical" = 'N'),selected = c('Y','N'))
+                               
+                               
                         ),
                         
                         ##Tabset
                         column(10, 
-                               ##Output map with slider underneath with the width of this second column
-                               leafletOutput("nycmap3", height = '450px'),
+                               
+                               #Print out map with slider and underneath a datatable
+                               leafletOutput("nycmap", height = '300px'),
                                
                                sliderInput("slidermap", label='Display Number '
-                                           ,min=5,max=20,value=10
-                                           , width = 'auto')
+                                           ,min=1,max=20,value=10
+                                           , width = 'auto'),
+                               dataTableOutput("map_data_table")
                         )
-                    )
+                      )
              ),
              
              ##Individual Restaurant Info

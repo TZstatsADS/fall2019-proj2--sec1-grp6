@@ -2,8 +2,6 @@ library(shiny)
 library(choroplethr)
 library(dplyr)
 library(remotes)
-install_version("choroplethrZip", "1.4.0")
-library(choroplethrZip)
 library(leaflet)
 library(maps)
 library(rgdal)
@@ -145,9 +143,12 @@ shinyServer(function(input, output) {
     # ----- save the data slot
     subdat_data=subdat@data[,c("ZIPCODE", "POPULATION")]
     subdat.rownames=rownames(subdat_data)
+    
     subdat_data=
       subdat_data%>%left_join(count.df, by=c("ZIPCODE" = "region"))
     rownames(subdat_data)=subdat.rownames
+
+    
     
     # ----- to write to geojson we need a SpatialPolygonsDataFrame
     subdat<-SpatialPolygonsDataFrame(subdat, data=subdat_data)
