@@ -11,7 +11,7 @@ library(dplyr)
 library(rgdal)
 library(Rcpp)
 #Import dataset
-df<- read.csv("C:/Users/Summer/Desktop/DOHMH_New_York_City_Restaurant_Inspection_Results.csv")
+df<- read.csv("C:/Users/ajkra/OneDrive/Documents/GitHub/fall2019-proj2--sec1-grp6/data/DOHMH_New_York_City_Restaurant_Inspection_Results.csv")
 #Clean the missing Data
 df %<>% filter(`BORO` != '0')
 df %<>% filter(`ZIPCODE` != 'N/A')

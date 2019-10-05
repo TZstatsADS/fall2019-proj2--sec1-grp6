@@ -8,18 +8,22 @@ library(magrittr)
 library(tidyverse)
 library(plotly)
 library(leaflet)
-
+library(Rcpp)
+library(varhandle)
 
 ##load data
 data_raw_1 <- fread('../data/Raw Data 1.csv')
 data_raw_2 <- fread('../data/Raw Data 2.csv')
 data_raw <- rbind(data_raw_1,data_raw_2)
 
+df<- read.csv("C:/Users/ajkra/OneDrive/Documents/GitHub/fall2019-proj2--sec1-grp6/data/DOHMH_New_York_City_Restaurant_Inspection_Results.csv")
+
 ##############Cleaning the raw data######################
 #getting rid of data where BORO = 0
 data_raw %<>% filter(`BORO` != '0')
 
-
+df %<>% filter(`BORO` != '0')
+df %<>% filter(`ZIPCODE` != 'N/A')
 
 #########################################################
 
@@ -27,9 +31,12 @@ data_raw %<>% filter(`BORO` != '0')
 allCuisines <- sort(unique(data_raw$`CUISINE DESCRIPTION`))
 allCuisines <- allCuisines[allCuisines != "Not Listed/Not Applicable"]
 
+cuisine <- sort(unique(df$CUISINE.DESCRIPTION))
+cuisine <- cuisine[cuisine != "Not Listed/Not Applicable"]
 #All listed boroughs
 allBoros <- unique(data_raw$BORO)
 
+borough <- sort(unique(df$BORO))
 
 #Main UI
 shinyUI(
@@ -118,7 +125,29 @@ shinyUI(
              ),
              
              ##Individual Restaurant Info
-             tabPanel("Restaurant Lookup"
+             tabPanel("Find Your Restaurant",
+                      fluidRow(
+                        
+                        ##side bar controls
+                        column(2,                  
+                          selectInput("speech1","Cuisine Type:" ,cuisine
+                          ),
+                          selectInput("speech2","Borough:" ,borough
+                          ),
+                          selectInput("variable", "Grade:",
+                                      c("A" = "A","B" = "B", "C"="C", "G"="G","N"="N","P"="P","Z"="Z"), multiple=TRUE),
+                          textInput('zip_input', "Zip:", value='10025'),
+                          checkboxGroupInput("map_select", "Critical?",
+                                             c("Y" = '1',
+                                               "N" = '2',
+                                               "I don't know" = '3'
+                                             ))
+                        ),
+                        column(10, 
+                               leafletOutput("mymap2",height = '300px'),
+                               dataTableOutput("NYC_Restaurants")
+                        )
+                      )
              )
   )
   )

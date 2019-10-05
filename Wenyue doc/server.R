@@ -9,10 +9,13 @@ library(RColorBrewer)
 library(leaflet)
 library(tigris)
 library(rgdal)
+library(Rcpp)
 
 data_raw_1 <- fread('../data/Raw Data 1.csv')
 data_raw_2 <- fread('../data/Raw Data 2.csv')
 data_raw <- rbind(data_raw_1,data_raw_2)
+
+df<- read.csv("C:/Users/ajkra/OneDrive/Documents/GitHub/fall2019-proj2--sec1-grp6/data/DOHMH_New_York_City_Restaurant_Inspection_Results.csv")
 
 ##############Cleaning the raw data######################
 #getting rid of data where BORO = 0
@@ -487,6 +490,24 @@ shinyServer(function(input, output) {
                 title = "Average Number of Violations",
                 opacity = 1
       )
+  })
+  
+  output$NYC_Restaurants=renderDataTable(
+    datatable(df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE.DESCRIPTION' == input$'speech1' & df$'BORO' == input$'speech2'  
+    ))%>%formatStyle('ZIPCODE',color='white',target='row',backgroundColor='black'),
+    options = list(pageLength=5, scrollX = TRUE, scrollY = TRUE
+    ))
+  output$mymap2 <- renderLeaflet({
+    m <- leaflet(data=df) %>%
+      addTiles() %>%
+      setView(lng=-73.98928, lat=40.75042 , zoom=9)%>%
+      addProviderTiles("Stamen.Toner")%>%
+      addMarkers(lng = ~ (df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE.DESCRIPTION' == input$'speech1' & df$'BORO' == input$'speech2') )$Longitude,
+                 lat = ~(df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE.DESCRIPTION' == input$'speech1'& df$'BORO' == input$'speech2'))$Latitude,
+                 
+      )
+    
+    m
   })
 
 })
