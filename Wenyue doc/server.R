@@ -15,15 +15,14 @@ data_raw_1 <- fread('../data/Raw Data 1.csv')
 data_raw_2 <- fread('../data/Raw Data 2.csv')
 data_raw <- rbind(data_raw_1,data_raw_2)
 
-df<- read.csv("C:/Users/ajkra/OneDrive/Documents/GitHub/fall2019-proj2--sec1-grp6/data/DOHMH_New_York_City_Restaurant_Inspection_Results.csv")
+df<- data_raw
 
 ##############Cleaning the raw data######################
 #getting rid of data where BORO = 0
 data_raw %<>% filter(`BORO` != '0')
 
-
-
-
+df %<>% filter(`BORO` != '0')
+df %<>% filter(`ZIPCODE` != 'N/A')
 
 #########################################################
 
@@ -150,7 +149,7 @@ names(staten_zip.df)<- "region"
 
 ########################################################
 
-# input <- list('cuisine1' = 'French','boro1' = 'Manhattan','cuisine2' = 'Chinese','boro2' = 'Manhattan','critFlag' = 'Y')
+# input <- list('cuisine1' = 'French','boro1' = 'Manhattan','cuisine2' = 'Chinese','boro2' = 'Manhattan','critFlag' = 'Y','variable' = 'A', 'speech1' = 'Chinese','speech2' = 'Manhattan')
 
 shinyServer(function(input, output) {
   
@@ -493,7 +492,7 @@ shinyServer(function(input, output) {
   })
   
   output$NYC_Restaurants=renderDataTable(
-    datatable(df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE.DESCRIPTION' == input$'speech1' & df$'BORO' == input$'speech2'  
+    datatable(df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE DESCRIPTION' == input$'speech1' & df$'BORO' == input$'speech2'  
     ))%>%formatStyle('ZIPCODE',color='white',target='row',backgroundColor='black'),
     options = list(pageLength=5, scrollX = TRUE, scrollY = TRUE
     ))
@@ -502,8 +501,8 @@ shinyServer(function(input, output) {
       addTiles() %>%
       setView(lng=-73.98928, lat=40.75042 , zoom=9)%>%
       addProviderTiles("Stamen.Toner")%>%
-      addMarkers(lng = ~ (df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE.DESCRIPTION' == input$'speech1' & df$'BORO' == input$'speech2') )$Longitude,
-                 lat = ~(df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE.DESCRIPTION' == input$'speech1'& df$'BORO' == input$'speech2'))$Latitude,
+      addMarkers(lng = ~ (df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE DESCRIPTION' == input$'speech1' & df$'BORO' == input$'speech2') )$Longitude,
+                 lat = ~(df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE DESCRIPTION' == input$'speech1'& df$'BORO' == input$'speech2'))$Latitude,
                  
       )
     
