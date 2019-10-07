@@ -21,7 +21,8 @@ The **learning goals** for this project is:
 Term: Fall 2019
 
 + Team 6
-+ **Projec title**: + Team members
++ **Projec title**: Food-Safety-Based Restaurant Recommandation App 
++ **Team members**:
 	+ Chen, Luyue
 	+ He, Chongyu
 	+ Kravitz, Adam
