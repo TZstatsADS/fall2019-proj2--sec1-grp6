@@ -48,11 +48,6 @@ filterByCuisineBorough <- function(dataRaw, cuisine,borough,critFlag){
 ##### Making a Zipcode List for map Boundaries ##########
 ## data from https://www.health.ny.gov/statistics/cancer/registry/appendix/neighborhoods.htm# 
 
-bronx_area.nbhd=c("Central Bronx", "Bronx Park and Fordham",
-                  "High Bridge and Morrisania", "Hunts Point and Mott Haven",
-                  "Kingsbridge and Riverdale", "Northeast Bronx",
-                  "Southeast Bronx")
-
 
 bronx_zip.df=c(10453, 10457, 10460,
                10458, 10467, 10468,
@@ -62,12 +57,6 @@ bronx_zip.df=c(10453, 10457, 10460,
                10466, 10469, 10470, 10475,
                10461, 10462,10464, 10465, 10472, 10473)
 
-
-brook_area.nbhd =c("Central Brooklyn", "Southwest Brooklyn",
-                   "Borough Park", "Canarsie and Flatlands",
-                   "Southern Brooklyn", "Northwest Brooklyn",
-                   "Flatbush", "East New York and New Lots", "Greenpoint",
-                   "Sunset Park", "Bushwick and Williamsburg")
 
 
 brook_zip.df =c(11212, 11213, 11216, 11233, 11238,
@@ -83,13 +72,6 @@ brook_zip.df =c(11212, 11213, 11216, 11233, 11238,
                 11206, 11221, 11237)
 
 
-man_area.nbhd=c("Central Harlem", "Chelsea and Clinton",
-                "East Harlem", "Gramercy Park and Murray Hill",
-                "Greenwich Village and Soho", "Lower Manhattan",
-                "Lower East Side", "Upper East Side", "Upper West Side",
-                "Inwood and Washington Heights")
-
-
 man_zip.df =c(10026, 10027, 10030, 10037, 10039,
               10001, 10011, 10018, 10019, 10020,
               10036, 10029, 10035,
@@ -100,12 +82,6 @@ man_zip.df =c(10026, 10027, 10030, 10037, 10039,
               10021, 10028, 10044, 10065, 10075, 10128,
               10023, 10031, 10032, 10033, 10034, 10040)
 
-
-queens_area.nbhd=c("Northeast Queens", "North Queens",
-                   "Central Queens", "Jamaica",
-                   "Northwest Queens", "West Central Queens",
-                   "Rockaways", "Southeast Queens", "Southwest Queens",
-                   "West Queens")
 
 queens_zip.df =c(11361, 11362, 11363, 11364,
                  11354, 11355, 11356, 11357, 11358, 11359, 11360,
@@ -119,8 +95,6 @@ queens_zip.df =c(11361, 11362, 11363, 11364,
                  11368, 11369, 11370, 11372, 11373, 11377, 11378)
 
 
-staten_area.nbhd=c("Port Richmond", "South Shore",
-                   "Stapleton and St. George", "Mid-Island")
 
 
 staten_zip.df  =c(10302, 10303, 10310,
@@ -129,9 +103,6 @@ staten_zip.df  =c(10302, 10303, 10310,
                   10314)
 
 
-nyc_area.nbhd=c(bronx_area.nbhd, brook_area.nbhd
-                , man_area.nbhd, queens_area.nbhd
-                , staten_area.nbhd)
 
 #Lists of all the zipcode that belong to each borough
 bronx_zip.df<-as.data.frame(bronx_zip.df)
@@ -330,10 +301,14 @@ shinyServer(function(input, output) {
   })
   
   output$map_data_table <- renderDataTable({
+   
+    #get unique restaurants and get the most current date's row for each restraunt
+    unique_Restaurant = data_raw %>%
+      group_by(CAMIS) %>%
+      filter(as.Date(`RECORD DATE`, '%m/%d/%Y')==max(as.Date(`RECORD DATE`, '%m/%d/%Y')))
+    
     #Filter columns and get rid of blanks and NA data
-    sample_data = data_raw[,c("ZIPCODE", "SCORE")]
-    
-    
+    sample_data = unique_Restaurant[,c("ZIPCODE", "SCORE")]
     sample_data[sample_data==""] <- NA
     sample_data <- na.omit(sample_data)
     
@@ -341,7 +316,7 @@ shinyServer(function(input, output) {
     count.df=sample_data%>%
       group_by(ZIPCODE)%>%
       summarise(
-        Avg_Violations=mean(SCORE)
+        Avg_Score=signif(mean(SCORE), digits = 4)
       )
     
     # filter ZipCode based on borough select input
@@ -371,12 +346,12 @@ shinyServer(function(input, output) {
     # based in the radio button inputs
     # and get top inputs based on the slider input
     if(input$Radio_button_name == "HV"){
-      count.df.sel <- count.df[order(count.df$Avg_Violations, decreasing = TRUE),]%>%
+      count.df.sel <- count.df[order(count.df$Avg_Score, decreasing = TRUE),]%>%
         filter(row_number() <= input$slidermap)
       
     }
     else if(input$Radio_button_name == "LV"){
-      count.df.sel <- count.df[order(count.df$Avg_Violations, decreasing = FALSE),]%>%
+      count.df.sel <- count.df[order(count.df$Avg_Score, decreasing = FALSE),]%>%
         filter(row_number() <= input$slidermap)
       
     }
@@ -391,14 +366,21 @@ shinyServer(function(input, output) {
   
   output$nycmap <- renderLeaflet({
     
-    #Filter columns and get rid of blanks and NA data
-    sample_data = data_raw[,c("ZIPCODE", "SCORE")]
+    
+    #get unique restaurants and get the most current date's row for each restraunt
+    unique_Restaurant = data_raw %>%
+      group_by(CAMIS) %>%
+      filter(as.Date(`RECORD DATE`, '%m/%d/%Y')==max(as.Date(`RECORD DATE`, '%m/%d/%Y')))
+
+    #Filter columns  
+    sample_data = unique_Restaurant[,c("ZIPCODE", "SCORE")]
     
     #Need region and value columns
     sample_data <- sample_data %>%
       mutate(region = as.character(ZIPCODE))%>%
       mutate(value = as.factor(SCORE))
     
+    #get rid of blanks and NA data
     sample_data[sample_data==""] <- NA
     sample_data <- na.omit(sample_data)
     
@@ -406,7 +388,7 @@ shinyServer(function(input, output) {
     count.df=sample_data%>%
       group_by(region)%>%
       summarise(
-        value=mean(SCORE)
+        value=signif(mean(SCORE), digits = 4)
       )
     
     # filter ZipCode based on borough select input
@@ -482,11 +464,11 @@ shinyServer(function(input, output) {
       addProviderTiles("CartoDB.Positron")%>%
       addPolygons(
         stroke = T, weight=1,
-        fillOpacity = 0.9,
+        fillOpacity = 0.7,
         color = ~pal(value)
       ) %>%
       addLegend("bottomright", pal = pal, values = ~value,
-                title = "Average Number of Violations",
+                title = "Average Score per Zip Code",
                 opacity = 1
       )
   })

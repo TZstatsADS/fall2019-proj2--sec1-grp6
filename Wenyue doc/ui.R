@@ -90,7 +90,7 @@ shinyUI(
                                selectInput("boromap","Borough map" ,c('All',allBoros) ,selected = 'All'),
                                br(),
                                radioButtons("Radio_button_name", label = "Violations",
-                                            choices = list("Lowest Violations" = "LV", "Highest Violations" = "HV"),
+                                            choices = list("Lowest Scores" = "LV", "Highest Scores" = "HV"),
                                             selected = "HV"),
                                br(),
                                br(),
@@ -103,14 +103,21 @@ shinyUI(
                         
                         ##Tabset
                         column(10, 
+                               tabsetPanel(
+                                 tabPanel("Map",
+                                   #Print out map with slider and underneath a datatable
+                                   leafletOutput("nycmap", height = '400px')
+                                 ),
+                                 tabPanel("Data Table",
                                
-                               #Print out map with slider and underneath a datatable
-                               leafletOutput("nycmap", height = '300px'),
-                               
-                               sliderInput("slidermap", label='Display Number '
-                                           ,min=1,max=20,value=10
-                                           , width = 'auto'),
-                               dataTableOutput("map_data_table")
+                                    dataTableOutput("map_data_table", height = '400px')
+                                    
+                                 ),
+                                 
+                                 sliderInput("slidermap", label='Display Number '
+                                             ,min=1,max=20,value=10
+                                             , width = 'auto')
+                               )
                         )
                       )
              ),
