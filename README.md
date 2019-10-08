@@ -34,10 +34,10 @@ Term: Fall 2019
         + Comparation
         The first part "Comparation" is composed of top violations, inspection scores, and grade breakdowns using two set of filters, which could let users know more about the overall violation situation. 
 	
-	+ Map Overview
+	+ Map Overview  
 	The second part uses map to show avearge score for every borough. 
 	
-	+ Restuarant Lookup
+	+ Restuarant Lookup  
 	The final part "Restaurant Lookup" would recommand restaurants according to cusine type, borough and grades provided by customers. In sum, the app could be used to know about restaurants in NYC and help users find their favorite choices. 
 
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
