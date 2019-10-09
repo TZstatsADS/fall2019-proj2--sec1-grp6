@@ -337,6 +337,7 @@ shinyServer(function(input, output,session) {
        
     #get unique restaurants and get the most current date's row for each restraunt
     data_sub <- filterByCuisineBorough2(data_raw,input$cuisinemap,input$boromap)
+    data_sub <- data_sub %>% mutate(SCORE = replace(SCORE,ACTION == "No violations were recorded at the time of this inspection.",0)) 
     
     unique_Restaurant <- data_sub %>% filter(!is.na(SCORE),SCORE != "",ZIPCODE %in% as.character(nbhd$ZIPCODE)) %>% arrange(`CAMIS`,as.Date(`INSPECTION DATE`,'%m/%d/%Y'))%>% group_by(`CAMIS`) %>%
       slice(n())
@@ -362,6 +363,7 @@ shinyServer(function(input, output,session) {
     
     #get unique restaurants and get the most current date's row for each restraunt
     data_sub <- filterByCuisineBorough2(data_raw,input$cuisinemap,input$boromap)
+    data_sub <- data_sub %>% mutate(SCORE = replace(SCORE,ACTION == "No violations were recorded at the time of this inspection.",0)) 
     
     unique_Restaurant <- data_sub %>% filter(!is.na(SCORE),SCORE != "",ZIPCODE %in% as.character(nbhd$ZIPCODE)) %>% arrange(`CAMIS`,as.Date(`INSPECTION DATE`,'%m/%d/%Y'))%>% group_by(`CAMIS`) %>%
       slice(n())
