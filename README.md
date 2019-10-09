@@ -30,7 +30,6 @@ Term: Fall 2019
 	+ Zhuo, Na
 
 + **Project summary**: The App is for "Restaurant Recommandation" based on food safety and specific needs of users. In that app, users could explore the food-safety landscape in New York City among different boroughs. The whole app contains three overview tabs: Comparation, Map Overview and Restuarant Lookup. 
-
         + Comparation
 	The first part "Comparation" is composed of top violations, inspection scores, and grade breakdowns using two set of    filters, which could let users know more about the overall violation situation. 
 	
