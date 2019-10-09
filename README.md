@@ -29,6 +29,7 @@ Term: Fall 2019
 	+ Wu, Wenyue
 	+ Zhuo, Na
 
++ **Project link**: https://lovelydoggy.shinyapps.io/Final_presentation/  
 + **Project summary**: The App is a tool to connect users to New York City restaurants' food safety inpsection results. In this app, users could explore the food-safety landscape among different boroughs, cuisines, and neighborhoods from various angles such as violations, scores, and grades. The whole app contains three overview tabs: Map Overview, Comparison and Restuarant Lookup.    
 
 	+ Map Overview  
