@@ -17,11 +17,11 @@ The **learning goals** for this project is:
 
 *The above general statement about project 2 can be removed once you are finished with your project. It is optional.
 
-## Project Title Lorem ipsum dolor sit amet
+## Tasty and Safety
 Term: Fall 2019
 
 + Team 6
-+ **Projec title**: Food-Safety-Based Restaurant Recommandation App 
++ **Projec title**: Tasty and Safety: Restaurant Safety Information App 
 + **Team members**:
 	+ Chen, Luyue
 	+ He, Chongyu
@@ -29,18 +29,18 @@ Term: Fall 2019
 	+ Wu, Wenyue
 	+ Zhuo, Na
 
-+ **Project summary**: The App is for "Restaurant Recommandation" based on food safety and specific needs of users. In that app, users could explore the food-safety landscape in New York City among different boroughs and get recommendation results according to their own cusine types and boroughs. The whole app contains three overview tabs: Comparation, Map Overview and Restuarant Lookup.    
++ **Project summary**: The App is a tool to connect users to New York City restaurants' food safety inpsection results. In this app, users could explore the food-safety landscape among different boroughs, cuisines, and neighborhoods from various angles such as violations, scores, and grades. The whole app contains three overview tabs: Map Overview, Comparison and Restuarant Lookup.    
+
+	+ Map Overview  
+	The first part gives users a customizable heatmap with an overview of average inspection score based on selected filters.
         
 	+ Comparation  
-	"Top vialotion" shows most-frequent violations of restaurants. "Inspection scores" and "Inspection grades" shows the breakdowns using two set of filters, which could let users know more about the overall violation distribution. 
-	
-	+ Map Overview  
-	The second part uses heatmap to give us an overview of average inspection score for every borough.
-	
-	+ Restuarant Lookup  
-	The final part "Restaurant Lookup" would recommand restaurants according to cusine type, borough and grades provided by customers. In sum, the app could be used to know about restaurants in New York City and help users find their favorite choices. 
+	This part allows a more nuanced comparison between selections based on various filters. "Top vialotion" shows most-frequent violations of restaurants. "Inspection scores" and "Inspection grades" shows the breakdowns of scores and grades restaurants received at the most recent inspection. 
 
-+ **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
+	+ Restuarant Lookup  
+	The final part "Restaurant Lookup" would allow users to lookup restaurants according to cusine type, borough and grades. Users can click on search results to identify their restaurants on the map and see further detailed information on the "Detail" tab. 
+
++ **Contribution statement**:All team members contributed to the completion of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
 Data acquisition and manipulation: Everyone
 
@@ -50,13 +50,15 @@ UI Design: Wenyue Wu, Adam Kravitz, Na Zhuo, Luyue Chen
   
   Server-Heatmap Page: Adam Kravitz,Wenyue Wu
   
-  Server-Recommendation page: Na Zhuo (mostly) Luyue Chen
+  Server-Recommendation Search page: Na Zhuo (mostly) Luyue Chen
+  
+  Server-Recommendation Detail page: Wenyue Wu
   
   Server-contact page: Luyue Chen (mostly) Na Zhuo
   
-UI and Server Intergration: Wenyue Wu, Adam Kravitz
+Code Intergration: Wenyue Wu, Adam Kravitz
 
-Debug help: Wenyue Wu
+Debug and Finalize: Wenyue Wu
 
 Presentation: Chongyu He
 
@@ -74,5 +76,5 @@ proj/
 └── output/
 ```
 
-Please see each subfolder for a README file.
+
 

@@ -12,6 +12,7 @@ library(rgdal)
 library(Rcpp)
 library(gpclib)
 library(maptools)
+library(shinyWidgets)
 
 
 gpclibPermit()
@@ -24,6 +25,7 @@ df<- data_raw
 df <- df[,c('CAMIS','DBA','BORO','BUILDING','STREET','ZIPCODE','PHONE','CUISINE DESCRIPTION','GRADE','INSPECTION DATE','Longitude','Latitude')]
 
 nbhd <- fread('../data/nbhd.csv')
+allNbhd <- nbhd$NEIGHBORHOOD
 ##############Cleaning the raw data######################
 #getting rid of data where BORO = 0
 data_raw %<>% filter(`BORO` != '0')
@@ -155,7 +157,7 @@ names(staten_zip.df)<- "region"
 
 # input <- list('cuisine1' = 'French','boro1' = 'Manhattan','cuisine2' = 'Chinese','boro2' = 'Manhattan','critFlag' = 'Y','variable' = 'A', 'speech1' = 'Chinese','speech2' = 'Manhattan','cuisinemap' = 'All','boromap' = 'All','nbhd'='All')
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output,session) {
   
   ##top violation barchart1
   # output$top_vio_bar1 <- renderPlotly({
@@ -311,8 +313,6 @@ shinyServer(function(input, output) {
     pie_data$Category <- factor(pie_data$Category,levels =  unique(pie_data$Category))
     
     
-    
-    
     plot_ly(textposition = 'inside',textinfo = 'label+percent',marker = list(colors = brewer.pal(8,"Set2"),line = list(color = '#FFFFFF', width = 1)),type = 'pie') %>%
       add_pie(data = count(grade_1[,-1], Grade), labels = ~Grade, values = ~n,
               name = grade_1$Category[1], domain = list(x = c(0, 0.5), y = c(0, 1))) %>%
@@ -327,14 +327,14 @@ shinyServer(function(input, output) {
         bordercolor = "black",
         borderwidth = 2),annotations = list(text = sprintf("<b>%s</b>", paste(grade_1$Category[1],paste(rep(" ",90),collapse = ''),grade_2$Category[1])),  x = 0.5, y = 1,showarrow=FALSE))
     
-
-    
-    
-    
   })
   
   output$map_data_table <- renderDataTable({
-   
+    validate(
+      need(input$cuisinemap,"Please Select Cuisine"),
+      need(input$boromap, "Please Select Borough")
+    )
+       
     #get unique restaurants and get the most current date's row for each restraunt
     data_sub <- filterByCuisineBorough2(data_raw,input$cuisinemap,input$boromap)
     
@@ -354,12 +354,11 @@ shinyServer(function(input, output) {
   })
   
   
-  
-  
-  
-  
   output$nycmap <- renderLeaflet({
-    
+    validate(
+      need(input$cuisinemap,"Please Select Cuisine"),
+      need(input$boromap, "Please Select Borough")
+    )
     
     #get unique restaurants and get the most current date's row for each restraunt
     data_sub <- filterByCuisineBorough2(data_raw,input$cuisinemap,input$boromap)
@@ -420,10 +419,11 @@ shinyServer(function(input, output) {
   output$NYC_Restaurants <- renderDataTable({
 
     #get unique restaurants and get the most current date's row for each restraunt
+    
     data_sub <- filterByCuisineBorough2(df,input$speech1,input$speech2)
     data_sub$Neighborhood <- nbhd$NEIGHBORHOOD[match(as.numeric(data_sub$ZIPCODE),nbhd$ZIPCODE)]
     
-    if(input$nbhd=='All'){
+    if('All' %in% input$nbhd){
       nbFilter <- nbhd$NEIGHBORHOOD
     }else{
       nbFilter <- input$nbhd
@@ -438,34 +438,86 @@ shinyServer(function(input, output) {
     datatable(df) %>% formatStyle(1:ncol(df),color='white',target='row',backgroundColor='black')},
     options = list(pageLength=5, scrollX = TRUE, scrollY = TRUE
     )
-    )
-  output$mymap2 <- renderLeaflet({
-    data_sub <- filterByCuisineBorough2(df,input$speech1,input$speech2)
-    
-    if(input$nbhd=='All'){
-      nbFilter <- nbhd$NEIGHBORHOOD
-    }else{
-      nbFilter <- input$nbhd
-    }
-    
-    data_sub$Neighborhood <- nbhd$NEIGHBORHOOD[match(as.numeric(data_sub$ZIPCODE),nbhd$ZIPCODE)]
-    
-    df <- data_sub %>% filter(ZIPCODE %in% as.character(nbhd$ZIPCODE),GRADE %in% input$variable,Neighborhood %in% nbFilter) %>% arrange(`CAMIS`,as.Date(`INSPECTION DATE`,'%m/%d/%Y'))%>% group_by(`CAMIS`) %>%
-      slice(n())
-    
-    
-    m <- leaflet(data=df) %>%
-      addTiles() %>%
-      setView(lng=-73.98928, lat=40.75042 , zoom=9)%>%
-      addProviderTiles("Stamen.Toner")%>%
-      addMarkers(lng = ~Longitude,
-                 lat = ~Latitude,
-                 
-      )
-    
-    m
+  )
+  
+  
+  observeEvent(input$speech2,{
+    updatePickerInput(session,"nbhd","Neighborhood:" ,choices = unique(nbhd$NEIGHBORHOOD[nbhd$BORO %in% input$speech2]))
   })
+  
+  observeEvent(input$NYC_Restaurants_rows_selected,{
+    output$mymap2 <- renderLeaflet({
 
+
+      data_sub <- filterByCuisineBorough2(df,input$speech1,input$speech2)
+      data_sub$Neighborhood <- nbhd$NEIGHBORHOOD[match(as.numeric(data_sub$ZIPCODE),nbhd$ZIPCODE)]
+
+      if('All' %in% input$nbhd){
+        nbFilter <- nbhd$NEIGHBORHOOD
+      }else{
+        nbFilter <- input$nbhd
+      }
+
+      df <- data_sub %>% filter(ZIPCODE %in% as.character(nbhd$ZIPCODE),GRADE %in% input$variable,Neighborhood %in% nbFilter) %>% arrange(`CAMIS`,as.Date(`INSPECTION DATE`,'%m/%d/%Y'))%>% group_by(`CAMIS`) %>%
+        slice(n())
+      df <- df[input$NYC_Restaurants_rows_selected,]
+
+
+      m <- leaflet(data=df) %>%
+        addTiles() %>%
+        setView(lng=-73.98928, lat=40.75042 , zoom=11)%>%
+        addProviderTiles("Stamen.Toner")%>%
+        addMarkers(lng = ~Longitude,
+                   lat = ~Latitude,
+
+        )
+
+      m
+    })
+
+    output$Restaurant_Detail <- renderDataTable({
+      
+      #get unique restaurants and get the most current date's row for each restraunt
+      
+      data_sub <- filterByCuisineBorough2(data_raw,input$speech1,input$speech2)
+      data_sub$Neighborhood <- nbhd$NEIGHBORHOOD[match(as.numeric(data_sub$ZIPCODE),nbhd$ZIPCODE)]
+      
+      if('All' %in% input$nbhd){
+        nbFilter <- nbhd$NEIGHBORHOOD
+      }else{
+        nbFilter <- input$nbhd
+      }
+      
+      df <- data_sub %>% filter(ZIPCODE %in% as.character(nbhd$ZIPCODE),GRADE %in% input$variable,Neighborhood %in% nbFilter) %>% arrange(`CAMIS`,as.Date(`INSPECTION DATE`,'%m/%d/%Y'))%>% group_by(`CAMIS`) %>%
+        slice(n())
+      
+      
+      restSel <- unique(df[input$NYC_Restaurants_rows_selected,'CAMIS',drop = T])
+      
+      dfSel <- data_raw %>% filter(CAMIS %in% restSel) %>% arrange(CAMIS,desc(as.Date(`INSPECTION DATE`,'%m/%d/%Y'))) 
+      dfSel$Address <- paste(dfSel$BUILDING,dfSel$STREET)
+      dfSel$Neighborhood <- nbhd$NEIGHBORHOOD[match(as.numeric(dfSel$ZIPCODE),nbhd$ZIPCODE)]
+      dfSel <- dfSel[,c('DBA','BORO','Neighborhood','Address','PHONE','CUISINE DESCRIPTION','VIOLATION DESCRIPTION','SCORE', 'GRADE','INSPECTION DATE')]
+      colnames(dfSel) <- c('Name','Borough','Neighborhood', 'Address','Phone','Cuisine Type','Violation','Score','Grade','Inspection Date')    
+      
+      datatable(dfSel) %>% formatStyle(1:ncol(dfSel),color='white',target='row',backgroundColor='black')
+      
+      
+      formattable::as.datatable(formattable(dfSel, 
+                                            list(`Name` = formatter("span", style = ~ style(color = "grey", font.weight = "bold"))
+                                            )
+      ),
+      options = list(pageLength=5, scrollX = TRUE, scrollY = TRUE
+      )
+      ) %>%
+        formatStyle(1:ncol(dfSel),color = 'black') %>% 
+        formatStyle(2:ncol(dfSel),border = '1px solid #ddd')
+    }
+    )
+    
+  
+  })
+  
 })
 
 
