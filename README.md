@@ -29,16 +29,16 @@ Term: Fall 2019
 	+ Wu, Wenyue
 	+ Zhuo, Na
 
-+ **Project summary**: The App is for "Restaurant Recommandation" based on food safety and specific needs of users. In that app, users could explore the food-safety landscape in New York City among different boroughs. The whole app contains three overview tabs: Comparation, Map Overview and Restuarant Lookup.    
++ **Project summary**: The App is for "Restaurant Recommandation" based on food safety and specific needs of users. In that app, users could explore the food-safety landscape in New York City among different boroughs and get recommendation results according to their own cusine types and boroughs. The whole app contains three overview tabs: Comparation, Map Overview and Restuarant Lookup.    
         
 	+ Comparation  
-	The first part "Comparation" is composed of top violations, inspection scores, and grade breakdowns using two set of    filters, which could let users know more about the overall violation situation. 
+	"Top vialotion" shows most-frequent violations of restaurants. "Inspection scores" and "Inspection grades" shows the breakdowns using two set of filters, which could let users know more about the overall violation distribution. 
 	
 	+ Map Overview  
-	The second part uses map to show avearge score for every borough. 
+	The second part uses heatmap to give us an overview of average inspection score for every borough.
 	
 	+ Restuarant Lookup  
-	The final part "Restaurant Lookup" would recommand restaurants according to cusine type, borough and grades provided by customers. In sum, the app could be used to know about restaurants in NYC and help users find their favorite choices. 
+	The final part "Restaurant Lookup" would recommand restaurants according to cusine type, borough and grades provided by customers. In sum, the app could be used to know about restaurants in New York City and help users find their favorite choices. 
 
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
