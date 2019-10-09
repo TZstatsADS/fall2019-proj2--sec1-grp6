@@ -9,12 +9,15 @@ library(plotly)
 library(leaflet)
 library(Rcpp)
 library(varhandle)
+library(gpclib)
 
 ##load data
 data_raw_1 <- fread('../data/Raw Data 1.csv')
 data_raw_2 <- fread('../data/Raw Data 2.csv')
 data_raw <- rbind(data_raw_1,data_raw_2)
 
+nbhd <- fread('../data/nbhd.csv')
+allNbhd <- nbhd$NEIGHBORHOOD
 
 ##############Cleaning the raw data######################
 #getting rid of data where BORO = 0
@@ -118,21 +121,20 @@ shinyUI(
                         
                         ##side bar controls
                         column(2,                  
-                          selectInput("speech1","Cuisine Type:" ,allCuisines
+                          selectInput("speech1","Cuisine Type:" ,c('All',allCuisines)
                           ),
-                          selectInput("speech2","Borough:" ,allBoros
+                          selectInput("speech2","Borough:" ,c('All',allBoros)
                           ),
                           selectInput("variable", "Grade:",
                                       c("A" = "A","B" = "B", "C"="C", "G"="G","N"="N","P"="P","Z"="Z"), multiple=TRUE),
-                          textInput('zip_input', "Zip:", value='10025'),
-                          checkboxGroupInput("map_select", "Critical?",
-                                             c("Y" = '1',
-                                               "N" = '2',
-                                               "I don't know" = '3'
-                                             ))
+                          selectInput("nbhd","Neighborhood:" ,c('All',allNbhd),selected = 'All'
+                          )
+                         
+                          
                         ),
                         column(10, 
-                               leafletOutput("mymap2",height = '300px'),
+                               leafletOutput("mymap2",height = '300px')
+                               ,
                                dataTableOutput("NYC_Restaurants")
                         )
                       )

@@ -11,6 +11,8 @@ library(tigris)
 library(rgdal)
 library(Rcpp)
 library(gpclib)
+library(maptools)
+
 
 gpclibPermit()
 
@@ -19,6 +21,7 @@ data_raw_2 <- fread('../data/Raw Data 2.csv')
 data_raw <- rbind(data_raw_1,data_raw_2)
 
 df<- data_raw
+df <- df[,c('CAMIS','DBA','BORO','BUILDING','STREET','ZIPCODE','PHONE','CUISINE DESCRIPTION','GRADE','INSPECTION DATE','Longitude','Latitude')]
 
 nbhd <- fread('../data/nbhd.csv')
 ##############Cleaning the raw data######################
@@ -150,7 +153,7 @@ names(staten_zip.df)<- "region"
 
 ########################################################
 
-# input <- list('cuisine1' = 'French','boro1' = 'Manhattan','cuisine2' = 'Chinese','boro2' = 'Manhattan','critFlag' = 'Y','variable' = 'A', 'speech1' = 'Chinese','speech2' = 'Manhattan','cuisinemap' = 'All','boromap' = 'All')
+# input <- list('cuisine1' = 'French','boro1' = 'Manhattan','cuisine2' = 'Chinese','boro2' = 'Manhattan','critFlag' = 'Y','variable' = 'A', 'speech1' = 'Chinese','speech2' = 'Manhattan','cuisinemap' = 'All','boromap' = 'All','nbhd'='All')
 
 shinyServer(function(input, output) {
   
@@ -346,8 +349,8 @@ shinyServer(function(input, output) {
         value=signif(mean(SCORE), digits = 4),
         count = n()
       )
-    
-    datatable(count.df)
+    colnames(count.df) <- c('Neighborhood','Average Score','# of Restaurants')
+    datatable(count.df) %>% formatStyle(1:ncol(count.df),color = 'black')
   })
   
   
@@ -414,18 +417,49 @@ shinyServer(function(input, output) {
       )
   })
   
-  output$NYC_Restaurants <- renderDataTable(
-    datatable(df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE DESCRIPTION' == input$'speech1' & df$'BORO' == input$'speech2'  
-    ))%>%formatStyle('ZIPCODE',color='white',target='row',backgroundColor='black'),
+  output$NYC_Restaurants <- renderDataTable({
+
+    #get unique restaurants and get the most current date's row for each restraunt
+    data_sub <- filterByCuisineBorough2(df,input$speech1,input$speech2)
+    data_sub$Neighborhood <- nbhd$NEIGHBORHOOD[match(as.numeric(data_sub$ZIPCODE),nbhd$ZIPCODE)]
+    
+    if(input$nbhd=='All'){
+      nbFilter <- nbhd$NEIGHBORHOOD
+    }else{
+      nbFilter <- input$nbhd
+    }
+    
+    df <- data_sub %>% filter(ZIPCODE %in% as.character(nbhd$ZIPCODE),GRADE %in% input$variable,Neighborhood %in% nbFilter) %>% arrange(`CAMIS`,as.Date(`INSPECTION DATE`,'%m/%d/%Y'))%>% group_by(`CAMIS`) %>%
+      slice(n())
+    df$Address <- paste(df$BUILDING,df$STREET)
+    df <- df[,c('DBA','BORO','Address','PHONE','CUISINE DESCRIPTION','GRADE','Neighborhood')]
+    colnames(df) <- c('Name','Borough', 'Address','Phone','Cuisine Type','Grade','Neighborhood')    
+    
+    datatable(df) %>% formatStyle(1:ncol(df),color='white',target='row',backgroundColor='black')},
     options = list(pageLength=5, scrollX = TRUE, scrollY = TRUE
-    ))
+    )
+    )
   output$mymap2 <- renderLeaflet({
+    data_sub <- filterByCuisineBorough2(df,input$speech1,input$speech2)
+    
+    if(input$nbhd=='All'){
+      nbFilter <- nbhd$NEIGHBORHOOD
+    }else{
+      nbFilter <- input$nbhd
+    }
+    
+    data_sub$Neighborhood <- nbhd$NEIGHBORHOOD[match(as.numeric(data_sub$ZIPCODE),nbhd$ZIPCODE)]
+    
+    df <- data_sub %>% filter(ZIPCODE %in% as.character(nbhd$ZIPCODE),GRADE %in% input$variable,Neighborhood %in% nbFilter) %>% arrange(`CAMIS`,as.Date(`INSPECTION DATE`,'%m/%d/%Y'))%>% group_by(`CAMIS`) %>%
+      slice(n())
+    
+    
     m <- leaflet(data=df) %>%
       addTiles() %>%
       setView(lng=-73.98928, lat=40.75042 , zoom=9)%>%
       addProviderTiles("Stamen.Toner")%>%
-      addMarkers(lng = ~ (df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE DESCRIPTION' == input$'speech1' & df$'BORO' == input$'speech2') )$Longitude,
-                 lat = ~(df%>%filter((df$'GRADE'  %in%  input$variable) & df$'CUISINE DESCRIPTION' == input$'speech1'& df$'BORO' == input$'speech2'))$Latitude,
+      addMarkers(lng = ~Longitude,
+                 lat = ~Latitude,
                  
       )
     
