@@ -42,6 +42,17 @@ Term: Fall 2019
 
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
+Data acquisition and manipulation: Everyone
+UI Design: Wenyue Wu, Adam Kravitz, Na Zhuo, Luyue Chen
+  Server-Comparison Page: Wenyue Wu
+  Server-Heatmap Page: Adam Kravitz,Wenyue Wu
+  Server-Recommendation page: Na Zhuo (mostly) Luyue Chen
+  Server-contact page: Luyue Chen (mostly) Na Zhuo
+UI and Server Intergration: Wenyue Wu, Adam Kravitz
+Debug help: Wenyue Wu
+Presentation: Chongyu He
+Github arrangement: Chongyu He 
+
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
 
 ```
