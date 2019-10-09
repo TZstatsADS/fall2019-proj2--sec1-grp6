@@ -87,18 +87,10 @@ shinyUI(
                         
                         ##side bar controls
                         column(2,
-                               selectInput("boromap","Borough map" ,c('All',allBoros) ,selected = 'All'),
+                               selectInput("boromap","Select Borough" ,c('All',allBoros) ,selected = 'All'),
                                br(),
-                               radioButtons("Radio_button_name", label = "Violations",
-                                            choices = list("Lowest Scores" = "LV", "Highest Scores" = "HV"),
-                                            selected = "HV"),
-                               br(),
-                               br(),
-                               br(),
-                               br()
-                               
-                               
-                               
+                               selectInput("cuisinemap","Select Cuisine" ,c('All',allCuisines) ,selected = 'All')
+        
                         ),
                         
                         ##Tabset
@@ -106,17 +98,15 @@ shinyUI(
                                tabsetPanel(
                                  tabPanel("Map",
                                    #Print out map with slider and underneath a datatable
-                                   leafletOutput("nycmap", height = '400px')
-                                 ),
-                                 tabPanel("Data Table",
-                               
-                                    dataTableOutput("map_data_table", height = '400px')
-                                    
+                                   leafletOutput("nycmap", height = '700px')
                                  ),
                                  
-                                 sliderInput("slidermap", label='Display Number '
-                                             ,min=1,max=20,value=10
-                                             , width = 'auto')
+                                 tabPanel("Data Table",
+
+                                    dataTableOutput("map_data_table", height = '400px')
+
+                                 )
+                               
                                )
                         )
                       )
